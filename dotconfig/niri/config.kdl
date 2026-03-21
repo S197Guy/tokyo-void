@@ -1,0 +1,73 @@
+// tokyo-void Niri Configuration
+// Theme: Tokyo Night Storm
+
+layout {
+    gaps 8
+    center-focused-column "never"
+
+    focus-ring {
+        width 2
+        active-color "#7aa2f7"
+        inactive-color "#414868"
+        urgent-color "#bb9af7"
+    }
+
+    border {
+        off
+    }
+}
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+        }
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+    }
+}
+
+output "eDP-1" {
+    mode "1920x1080@60.0"
+    scale 1.0
+}
+
+binds {
+    Mod+Shift+SLASH { show-hotkey-overlay; }
+
+    Mod+Return { spawn "alacritty"; }
+    Mod+Space { spawn "fuzzel"; }
+    
+    Mod+Q { close-window; }
+    
+    Mod+H { focus-column-left; }
+    Mod+J { focus-window-down; }
+    Mod+K { focus-window-up; }
+    Mod+L { focus-column-right; }
+
+    Mod+Shift+H { move-column-left; }
+    Mod+Shift+J { move-window-down; }
+    Mod+Shift+K { move-window-up; }
+    Mod+Shift+L { move-column-right; }
+
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    
+    Mod+Ctrl+1 { move-column-to-workspace 1; }
+    Mod+Ctrl+2 { move-column-to-workspace 2; }
+    Mod+Ctrl+3 { move-column-to-workspace 3; }
+
+    Mod+Shift+E { quit; }
+    
+    // Laptop Controls
+    XF86MonBrightnessUp { spawn "brightnessctl" "set" "5%+"; }
+    XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
+}
+
+spawn-at-startup "quickshell"
