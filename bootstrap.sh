@@ -13,7 +13,7 @@ echo -e "${BLUE}Starting tokyo-void bootstrap...${NC}"
 
 # 1. Install Core Packages
 PKGS=(
-    niri
+    niri\n    greetd\n    tuigreet
     quickshell
     neovim
     ranger
@@ -73,4 +73,9 @@ for dir in ~/tokyo-void/dotconfig/*; do
     fi
 done
 
-echo -e "${GREEN}Bootstrap complete! Please reboot or start Niri manually.${NC}"
+
+# 4. Greetd Config (requires sudo)
+echo -e "${BLUE}Configuring greetd...${NC}"
+sudo mkdir -p /etc/greetd
+sudo cp ~/tokyo-void/etc/greetd/config.toml /etc/greetd/config.toml
+\necho -e "${GREEN}Bootstrap complete! Please reboot or start Niri manually.${NC}"
