@@ -22,7 +22,7 @@ PKGS=(
     fish-shell
     alacritty
     starship
-    tlp
+    tlp\n    greetd
     brightnessctl
     elogind
     polkit
@@ -59,7 +59,7 @@ SERVICES=(
     dbus
     elogind
     polkitd
-    tlp
+    tlp\n    greetd
 )
 
 echo -e "${BLUE}Enabling services...${NC}"
@@ -111,4 +111,22 @@ echo -e "${BLUE}Configuring NPM global prefix...${NC}"
 mkdir -p ~/.npm-global
 npm config set prefix "~/.npm-global"
 
-echo -e "${GREEN}Bootstrap complete! Please reboot or start Niri manually.${NC}"
+
+# 7. Void-specific Permissions & Groups
+echo -e "${BLUE}Configuring user groups and permissions...${NC}"
+# Add current user to essential groups
+sudo usermod -aG video,audio,input,storage,network,wheel "$USER"
+
+# Add the greetd user to video/input so tuigreet can render
+if id "_greeter" &>/dev/null; then
+    sudo usermod -aG video,input _greeter
+elif id "greeter" &>/dev/null; then
+    sudo usermod -aG video,input greeter
+fi
+
+# Ensure XDG_RUNTIME_DIR is handled (essential for Wayland on Void)
+if ! grep -q "XDG_RUNTIME_DIR" ~/.bash_profile 2>/dev/null; then
+    echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> ~/.bash_profile
+    echo "export XDG_SESSION_TYPE=wayland" >> ~/.bash_profile
+fi
+\necho -e "${GREEN}Bootstrap complete! Please reboot or start Niri manually.${NC}"
