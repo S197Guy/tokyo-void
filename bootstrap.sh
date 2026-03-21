@@ -25,7 +25,7 @@ PKGS=(
     elogind
     polkit
     dbus
-    mesa-dri\n    podman\n    crun\n    conmon\n    slirp4netns\n    fuse-overlayfs\n    podman-compose
+    mesa-dri\n    podman\n    crun\n    conmon\n    slirp4netns\n    fuse-overlayfs\n    podman-compose\n    rust\n    go\n    nodejs-lts
     git
     curl
     wget
@@ -91,4 +91,9 @@ if ! grep -q "$USER" /etc/subuid; then
     sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 "$USER"
     echo -e "${GREEN}Assigned sub-UIDs/GIDs to $USER${NC}"
 fi
+\n
+# 6. NPM Global Setup
+echo -e "${BLUE}Configuring NPM global prefix...${NC}"
+mkdir -p ~/.npm-global
+npm config set prefix "~/.npm-global"
 \necho -e "${GREEN}Bootstrap complete! Please reboot or start Niri manually.${NC}"
