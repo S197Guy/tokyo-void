@@ -25,7 +25,7 @@ PKGS=(
     elogind
     polkit
     dbus
-    mesa-dri\n    podman\n    crun\n    conmon\n    slirp4netns\n    fuse-overlayfs
+    mesa-dri\n    podman\n    crun\n    conmon\n    slirp4netns\n    fuse-overlayfs\n    podman-compose
     git
     curl
     wget
