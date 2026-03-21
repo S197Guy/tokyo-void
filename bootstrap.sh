@@ -25,7 +25,7 @@ PKGS=(
     elogind
     polkit
     dbus
-    mesa-dri
+    mesa-dri\n    podman\n    crun\n    conmon\n    slirp4netns\n    fuse-overlayfs
     git
     curl
     wget
@@ -78,4 +78,17 @@ done
 echo -e "${BLUE}Configuring greetd...${NC}"
 sudo mkdir -p /etc/greetd
 sudo cp ~/tokyo-void/etc/greetd/config.toml /etc/greetd/config.toml
+\n
+# 5. Podman Setup (Rootless & Namespaces)
+echo -e "${BLUE}Configuring Podman for rootless usage...${NC}"
+# Enable unprivileged user namespaces
+sudo mkdir -p /etc/sysctl.d
+echo "kernel.unprivileged_userns_clone=1" | sudo tee /etc/sysctl.d/99-podman.conf
+sudo sysctl -p /etc/sysctl.d/99-podman.conf
+
+# Setup subuid/subgid if not present
+if ! grep -q "$USER" /etc/subuid; then
+    sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 "$USER"
+    echo -e "${GREEN}Assigned sub-UIDs/GIDs to $USER${NC}"
+fi
 \necho -e "${GREEN}Bootstrap complete! Please reboot or start Niri manually.${NC}"
