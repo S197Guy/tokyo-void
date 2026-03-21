@@ -13,7 +13,9 @@ echo -e "${BLUE}Starting tokyo-void bootstrap...${NC}"
 
 # 1. Install Core Packages
 PKGS=(
-    niri\n    greetd\n    tuigreet
+    niri
+    greetd
+    tuigreet
     quickshell
     neovim
     ranger
@@ -25,11 +27,21 @@ PKGS=(
     elogind
     polkit
     dbus
-    mesa-dri\n    podman\n    crun\n    conmon\n    slirp4netns\n    fuse-overlayfs\n    podman-compose\n    rust\n    go\n    nodejs-lts
+    mesa-dri
+    podman
+    crun
+    conmon
+    slirp4netns
+    fuse-overlayfs
+    podman-compose
+    rust
+    go
+    nodejs-lts
     git
     curl
     wget
-    fuzzel\n    eza
+    fuzzel
+    eza
     swaybg
     swayidle
     swaylock
@@ -78,7 +90,8 @@ done
 echo -e "${BLUE}Configuring greetd...${NC}"
 sudo mkdir -p /etc/greetd
 sudo cp ~/tokyo-void/etc/greetd/config.toml /etc/greetd/config.toml
-\n
+
+
 # 5. Podman Setup (Rootless & Namespaces)
 echo -e "${BLUE}Configuring Podman for rootless usage...${NC}"
 # Enable unprivileged user namespaces
@@ -91,9 +104,11 @@ if ! grep -q "$USER" /etc/subuid; then
     sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 "$USER"
     echo -e "${GREEN}Assigned sub-UIDs/GIDs to $USER${NC}"
 fi
-\n
+
+
 # 6. NPM Global Setup
 echo -e "${BLUE}Configuring NPM global prefix...${NC}"
 mkdir -p ~/.npm-global
 npm config set prefix "~/.npm-global"
-\necho -e "${GREEN}Bootstrap complete! Please reboot or start Niri manually.${NC}"
+
+echo -e "${GREEN}Bootstrap complete! Please reboot or start Niri manually.${NC}"
