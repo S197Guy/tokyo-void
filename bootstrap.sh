@@ -52,7 +52,7 @@ PKGS=(
 )
 
 echo -e "${BLUE}Installing packages...${NC}"
-sudo xbps-install -Sy "${PKGS[@]}"
+sudo xbps-install -Syu || true\nsudo xbps-install -y "${PKGS[@]}"
 
 # 2. Enable Services
 SERVICES=(
@@ -80,7 +80,7 @@ for dir in ~/tokyo-void/dotconfig/*; do
     if [ -e "$target" ]; then
         echo -e "${RED}Warning:${NC} $target already exists. Skipping."
     else
-        ln -s "$dir" "$target"
+        ln -sf "$dir" "$target"
         echo -e "${GREEN}Linked $(basename "$dir")${NC}"
     fi
 done
@@ -115,7 +115,7 @@ npm config set prefix "~/.npm-global"
 # 7. Void-specific Permissions & Groups
 echo -e "${BLUE}Configuring user groups and permissions...${NC}"
 # Add current user to essential groups
-sudo usermod -aG video,audio,input,storage,network,wheel "$USER"
+sudo usermod -aG video,audio,input,storage,network,wheel "$USER" 2>/dev/null || true
 
 # Add the greetd user to video/input so tuigreet can render
 if id "_greeter" &>/dev/null; then
