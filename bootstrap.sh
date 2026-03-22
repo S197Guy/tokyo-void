@@ -71,6 +71,9 @@ if [ ! -d "/etc/sv/greetd" ]; then
     sudo bash -c "cat <<EOF > /etc/sv/greetd/run
 #!/bin/sh
 exec 2>&1
+exec 2>&1
+# Clear TTY1 before starting
+/usr/bin/clear > /dev/tty1
 exec greetd
 EOF"
     sudo chmod +x /etc/sv/greetd/run
@@ -80,6 +83,7 @@ echo -e "${BLUE}Enabling services...${NC}"
 if [ -L "/var/service/agetty-tty1" ]; then
     echo -e "${BLUE}Disabling agetty-tty1 to avoid conflict with greetd...${NC}"
     sudo rm /var/service/agetty-tty1
+    sudo sv stop agetty-tty1 2>/dev/null || true
 fi
 for service in "${SERVICES[@]}"; do
     if [ ! -L "/var/service/$service" ]; then
