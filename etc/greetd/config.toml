@@ -1,17 +1,7 @@
 [terminal]
-vt = 7
+vt = 1
 
 [default_session]
-# Tokyo Night themed tuigreet
-# Colors:
-# border:  #7aa2f7 (Blue)
-# text:    #c0caf5 (Foreground)
-# prompt:  #bb9af7 (Magenta)
-# time:    #e0af68 (Yellow)
-# action:  #7dcfff (Cyan)
-# button:  #9ece6a (Green)
-# container: #1a1b26 (Background)
-# input:   #c0caf5 (Foreground)
-
+# Added --remember-user and explicit VT handling
 command = "tuigreet --time --remember --asterisks --cmd niri --theme 'border=#7aa2f7;text=#c0caf5;prompt=#bb9af7;time=#e0af68;action=#7dcfff;button=#9ece6a;container=#1a1b26;input=#c0caf5'"
 user = "_greeter"

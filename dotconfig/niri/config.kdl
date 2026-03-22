@@ -70,4 +70,4 @@ binds {
     XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
 }
 
-spawn-at-startup "quickshell"
+spawn-at-startup "quickshell" "~/.config/quickshell/shell.qml"

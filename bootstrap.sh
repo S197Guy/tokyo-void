@@ -74,22 +74,23 @@ done
 
 # 3. Symlink Configs
 echo -e "${BLUE}Linking configurations...${NC}"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 mkdir -p ~/.config
-for dir in ~/tokyo-void/dotconfig/*; do
-    target="$HOME/.config/$(basename "$dir")"
-    if [ -e "$target" ]; then
-        echo -e "${RED}Warning:${NC} $target already exists. Skipping."
-    else
-        ln -sf "$dir" "$target"
-        echo -e "${GREEN}Linked $(basename "$dir")${NC}"
-    fi
+for source_path in "$SCRIPT_DIR/dotconfig/"*; do
+    name=$(basename "$source_path")
+    target="$HOME/.config/$name"
+    # Force replace existing files/dirs
+    rm -rf "$target"
+    ln -sf "$source_path" "$target"
+    echo -e "${GREEN}Linked $name${NC}"
 done
+
 
 
 # 4. Greetd Config (requires sudo)
 echo -e "${BLUE}Configuring greetd...${NC}"
 sudo mkdir -p /etc/greetd
-sudo cp ~/tokyo-void/etc/greetd/config.toml /etc/greetd/config.toml
+sudo cp "$SCRIPT_DIR/etc/greetd/config.toml" /etc/greetd/config.toml
 
 
 # 5. Podman Setup (Rootless & Namespaces)
