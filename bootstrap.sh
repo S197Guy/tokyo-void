@@ -97,7 +97,7 @@ sudo cp "$SCRIPT_DIR/etc/greetd/config.toml" /etc/greetd/config.toml
 echo -e "${BLUE}Configuring Podman for rootless usage...${NC}"
 # Enable unprivileged user namespaces
 sudo mkdir -p /etc/sysctl.d
-echo "kernel.unprivileged_userns_clone=1" | sudo tee /etc/sysctl.d/99-podman.conf
+echo "user.max_user_namespaces=28633" | sudo tee /etc/sysctl.d/99-podman.conf
 sudo sysctl -p /etc/sysctl.d/99-podman.conf
 
 # Setup subuid/subgid if not present
@@ -120,9 +120,9 @@ sudo usermod -aG video,audio,input,storage,network,wheel "$USER" 2>/dev/null || 
 
 # Add the greetd user to video/input so tuigreet can render
 if id "_greeter" &>/dev/null; then
-    sudo usermod -aG video,input _greeter
+    sudo usermod -aG video,input,tty _greeter
 elif id "greeter" &>/dev/null; then
-    sudo usermod -aG video,input greeter
+    sudo usermod -aG video,input,tty greeter
 fi
 
 # Ensure XDG_RUNTIME_DIR is handled (essential for Wayland on Void)

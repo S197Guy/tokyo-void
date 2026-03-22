@@ -1,4 +1,3 @@
-mod-key "Super"
 
 // tokyo-void Niri Configuration
 // Theme: Tokyo Night Storm
@@ -20,6 +19,7 @@ layout {
 }
 
 input {
+    mod-key "Super"
     keyboard {
         xkb {
             layout "us"
