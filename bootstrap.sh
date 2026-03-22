@@ -71,9 +71,13 @@ if [ ! -d "/etc/sv/greetd" ]; then
     sudo bash -c "cat <<EOF > /etc/sv/greetd/run
 #!/bin/sh
 exec 2>&1
-exec 2>&1
+# Wait for elogind and dbus
+sv check elogind || exit 1
+sv check dbus || exit 1
 # Clear TTY1 before starting
 /usr/bin/clear > /dev/tty1
+# Run greetd with full environment
+export XDG_RUNTIME_DIR=/run/user/$(id -u greeter)
 exec greetd
 EOF"
     sudo chmod +x /etc/sv/greetd/run
