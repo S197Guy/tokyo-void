@@ -22,7 +22,8 @@ PKGS=(
     fish-shell
     alacritty
     starship
-    tlp\n    greetd
+    tlp
+    greetd
     brightnessctl
     elogind
     polkit
@@ -52,14 +53,16 @@ PKGS=(
 )
 
 echo -e "${BLUE}Installing packages...${NC}"
-sudo xbps-install -Syu || true\nsudo xbps-install -y "${PKGS[@]}"
+sudo xbps-install -Syu || true
+sudo xbps-install -y "${PKGS[@]}"
 
 # 2. Enable Services
 SERVICES=(
     dbus
     elogind
     polkitd
-    tlp\n    greetd
+    tlp
+    greetd
 )
 
 echo -e "${BLUE}Enabling services...${NC}"
@@ -130,4 +133,5 @@ if ! grep -q "XDG_RUNTIME_DIR" ~/.bash_profile 2>/dev/null; then
     echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> ~/.bash_profile
     echo "export XDG_SESSION_TYPE=wayland" >> ~/.bash_profile
 fi
-\necho -e "${GREEN}Bootstrap complete! Please reboot or start Niri manually.${NC}"
+
+echo -e "${GREEN}Bootstrap complete! Please reboot or start Niri manually.${NC}"
