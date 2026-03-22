@@ -71,14 +71,18 @@ if [ ! -d "/etc/sv/greetd" ]; then
     sudo bash -c "cat <<EOF > /etc/sv/greetd/run
 #!/bin/sh
 exec 2>&1
-# Wait for elogind and dbus
-sv check elogind || exit 1
+# Ensure we have a valid terminal
+export TERM=linux
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Wait for system services
 sv check dbus || exit 1
-# Clear TTY1 before starting
+sv check elogind || exit 1
+
+# Clear TTY1
 /usr/bin/clear > /dev/tty1
-# Run greetd with full environment
-export XDG_RUNTIME_DIR=/run/user/$(id -u greeter)
-exec greetd
+
+exec /usr/bin/greetd
 EOF"
     sudo chmod +x /etc/sv/greetd/run
 fi
@@ -112,6 +116,10 @@ for source_path in "$SCRIPT_DIR/dotconfig/"*; do
 done
 
 
+
+# Create tuigreet cache
+sudo mkdir -p /var/cache/tuigreet
+sudo chown greeter:greeter /var/cache/tuigreet
 
 # 4. Greetd Config (requires sudo)
 echo -e "${BLUE}Configuring greetd...${NC}"
@@ -149,6 +157,7 @@ if id "_greeter" &>/dev/null; then
     sudo usermod -aG video,input,tty _greeter
 elif id "greeter" &>/dev/null; then
     sudo usermod -aG video,input,tty greeter
+sudo usermod -aG _greetd greeter 2>/dev/null || true
 fi
 
 # Ensure XDG_RUNTIME_DIR is handled (essential for Wayland on Void)
