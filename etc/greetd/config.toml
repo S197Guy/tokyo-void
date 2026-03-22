@@ -2,6 +2,6 @@
 vt = 1
 
 [default_session]
-# Added --remember-user and explicit VT handling
-command = "tuigreet --time --remember --asterisks --cmd niri --theme 'border=#7aa2f7;text=#c0caf5;prompt=#bb9af7;time=#e0af68;action=#7dcfff;button=#9ece6a;container=#1a1b26;input=#c0caf5'"
+# Added dbus-run-session for better input/seat handling
+command = "dbus-run-session tuigreet --time --remember --asterisks --cmd niri --theme 'border=#7aa2f7;text=#c0caf5;prompt=#bb9af7;time=#e0af68;action=#7dcfff;button=#9ece6a;container=#1a1b26;input=#c0caf5'"
 user = "_greeter"
