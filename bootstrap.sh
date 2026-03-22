@@ -66,6 +66,11 @@ SERVICES=(
 )
 
 echo -e "${BLUE}Enabling services...${NC}"
+# Disable agetty on tty1 if greetd is using it
+if [ -L "/var/service/agetty-tty1" ]; then
+    echo -e "${BLUE}Disabling agetty-tty1 to avoid conflict with greetd...${NC}"
+    sudo rm /var/service/agetty-tty1
+fi
 for service in "${SERVICES[@]}"; do
     if [ ! -L "/var/service/$service" ]; then
         sudo ln -s "/etc/sv/$service" /var/service/
