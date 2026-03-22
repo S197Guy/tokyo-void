@@ -65,6 +65,16 @@ SERVICES=(
     greetd
 )
 
+# Create greetd runit service if it does not exist
+if [ ! -d "/etc/sv/greetd" ]; then
+    sudo mkdir -p /etc/sv/greetd
+    sudo bash -c "cat <<EOF > /etc/sv/greetd/run
+#!/bin/sh
+exec 2>&1
+exec greetd
+EOF"
+    sudo chmod +x /etc/sv/greetd/run
+fi
 echo -e "${BLUE}Enabling services...${NC}"
 # Disable agetty on tty1 if greetd is using it
 if [ -L "/var/service/agetty-tty1" ]; then

@@ -1,7 +1,7 @@
 [terminal]
-vt = 1
+vt = 7
 
 [default_session]
 # Added dbus-run-session for better input/seat handling
-command = "tuigreet --time --remember --asterisks --cmd 'dbus-run-session niri' --theme 'border=#7aa2f7;text=#c0caf5;prompt=#bb9af7;time=#e0af68;action=#7dcfff;button=#9ece6a;container=#1a1b26;input=#c0caf5'"
+command = "/usr/bin/tuigreet --time --remember --asterisks --cmd 'dbus-run-session niri' --theme 'border=#7aa2f7;text=#c0caf5;prompt=#bb9af7;time=#e0af68;action=#7dcfff;button=#9ece6a;container=#1a1b26;input=#c0caf5'"
 user = "greeter"
