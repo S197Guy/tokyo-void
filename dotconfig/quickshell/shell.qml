@@ -24,15 +24,15 @@ ShellRoot {
 
         Process {
             id: sysInfo
-            // More robust command: auto-detect BAT0/BAT1, use simpler awk
-            command: ["sh", "-c", "BP=$(ls -d /sys/class/power_supply/BAT* | head -1); [ -d \"$BP\" ] && cat \"$BP/capacity\" || echo 0; [ -d \"$BP\" ] && cat \"$BP/status\" || echo Unknown; top -bn1 | awk \"/Cpu\\(s\\)/ {print $2}\"; free -h | awk \"/Mem:/ {print $3}\""]
+            // Fallback strategy: try BAT0, then BAT1
+            command: ["sh", "-c", "if [ -d /sys/class/power_supply/BAT0 ]; then BP=BAT0; elif [ -d /sys/class/power_supply/BAT1 ]; then BP=BAT1; fi; [ -n \"$BP\" ] && cat /sys/class/power_supply/\"$BP\"/capacity || echo 0; [ -n \"$BP\" ] && cat /sys/class/power_supply/\"$BP\"/status || echo Unknown; top -bn1 | grep \"Cpu(s)\" | sed \"s/.*, *\\([0-9.]*\\)%* id.*/\\1/\" | awk \"{print 100 - $1}\"; free -h | awk \"/Mem:/ {print $3}\""]
             stdout: StdioCollector {
                 onStreamFinished: {
                     var lines = text.trim().split("\n");
                     if (lines.length >= 4) {
                         battery = lines[0] + "%";
                         status = lines[1];
-                        cpu = lines[2] + "%";
+                        cpu = lines[2].split(".")[0] + "%";
                         ram = lines[3];
                     }
                 }
@@ -51,22 +51,26 @@ ShellRoot {
                 anchors.rightMargin: 12
                 spacing: 16
 
+                // 1. Launcher Button (Using literal UTF-8 icons to avoid box issues)
                 Text {
-                    text: "\uf306"
+                    text: "\uf306" // Arch/Void-like icon
                     color: "#7aa2f7"
                     font.pixelSize: 18
                     font.family: "JetBrainsMono Nerd Font"
                     Layout.alignment: Qt.AlignVCenter
+                    
                     MouseArea {
                         anchors.fill: parent
                         onClicked: fuzzelLauncher.startDetached()
                     }
+                    
                     Process {
                         id: fuzzelLauncher
                         command: ["/usr/bin/fuzzel"]
                     }
                 }
 
+                // 2. Workspaces
                 RowLayout {
                     spacing: 8
                     Repeater {
@@ -93,56 +97,70 @@ ShellRoot {
 
                 Item { Layout.fillWidth: true }
 
+                // 4. Status Info
                 RowLayout {
                     spacing: 16
+                    
+                    // CPU
                     Text {
                         text: "\uf2db " + cpu
                         color: "#9ece6a"
                         font.pixelSize: 12
                         font.family: "JetBrainsMono Nerd Font"
                     }
+
+                    // RAM
                     Text {
                         text: "\uefc5 " + ram
                         color: "#bb9af7"
                         font.pixelSize: 12
                         font.family: "JetBrainsMono Nerd Font"
                     }
+
+                    // Battery
                     Text {
-                        text: (status === "Charging" ? "\uf0e7 " : "\uf240 ") + battery
-                        color: parseInt(battery) < 20 ? "#f7768e" : "#9ece6a"
+                        text: (status.includes(\"Charging\") ? \"\uf0e7 \" : \"\uf240 \") + battery
+                        color: parseInt(battery) < 20 ? \"#f7768e\" : \"#9ece6a\"
                         font.pixelSize: 12
-                        font.family: "JetBrainsMono Nerd Font"
+                        font.family: \"JetBrainsMono Nerd Font\"
                     }
+
+                    // Time
                     Text {
                         id: timeText
                         color: "#7dcfff"
                         font.pixelSize: 12
                         font.family: "JetBrainsMono Nerd Font"
+                        
                         Timer {
                             interval: 1000; running: true; repeat: true
                             onTriggered: {
                                 var now = new Date();
-                                timeText.text = "\uf017 " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                                timeText.text = "\uf017 " + now.toLocaleTimeString([], { hour: \"2-digit\", minute: \"2-digit\" });
                             }
                         }
                         Component.onCompleted: {
                             var now = new Date();
-                            text = "\uf017 " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                            text = "\uf017 " + now.toLocaleTimeString([], { hour: \"2-digit\", minute: \"2-digit\" });
                         }
                     }
+
+                    // 5. Power Button
                     Text {
                         text: "\uf011"
                         color: "#f7768e"
                         font.pixelSize: 16
                         font.family: "JetBrainsMono Nerd Font"
                         Layout.alignment: Qt.AlignVCenter
+                        
                         MouseArea {
                             anchors.fill: parent
                             onClicked: powerMenu.startDetached()
                         }
+                        
                         Process {
                             id: powerMenu
-                            command: ["sh", "-c", "echo -e \"Logout\nReboot\nShutdown\" | fuzzel --dmenu --prompt \"Power: \" | xargs -I{} sh -c \"case {} in Logout) niri msg action quit ;; Reboot) sudo reboot ;; Shutdown) sudo poweroff ;; esac\""]
+                            command: ["sh", "-c", "echo -e \"Logout\nReboot\nShutdown\" | fuzzel --dmenu --prompt \"Power: \" | xargs -I{} sh -c \"case {} in Logout) niri msg action quit ;; Reboot) reboot ;; Shutdown) poweroff ;; esac\""]
                         }
                     }
                 }

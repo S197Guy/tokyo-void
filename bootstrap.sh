@@ -4,10 +4,10 @@
 set -e
 
 # Colors
-BLUE="[0;34m"
-GREEN="[0;32m"
-RED="[0;31m"
-NC="[0m"
+BLUE="\033[0;34m"
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+NC="\033[0m"
 
 # Ensure NOT run as root
 if [ "$(id -u)" -eq 0 ]; then
@@ -23,7 +23,7 @@ if ! id "greeter" &>/dev/null; then
     sudo useradd -M -G video,input,tty -s /sbin/nologin greeter
 fi
 
-# 1. Install Core Packages (Adding seatd and vulkan drivers)
+# 1. Install Core Packages
 PKGS=(niri greetd tuigreet quickshell neovim ranger fish-shell alacritty starship tlp brightnessctl elogind polkit dbus mesa-dri seatd mesa-vulkan-intel mesa-vulkan-radeon podman crun conmon slirp4netns fuse-overlayfs podman-compose rust go nodejs-lts git curl wget fuzzel eza swww swayidle swaylock pipewire wireplumber xdg-desktop-portal-gtk xdg-desktop-portal-wlr noto-fonts-ttf font-awesome-otf nerd-fonts-symbols-ttf font-jetbrains-mono-otf)
 
 echo -e "${BLUE}Installing packages...${NC}"
@@ -36,16 +36,7 @@ SERVICES=(dbus elogind polkitd tlp greetd seatd)
 # Create greetd runit service
 if [ ! -d "/etc/sv/greetd" ]; then
     sudo mkdir -p "/etc/sv/greetd"
-    sudo bash -c 'printf "#!/bin/sh
-exec 2>&1
-export TERM=linux
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-sv check dbus || exit 1
-sv check elogind || exit 1
-sv check seatd || exit 1
-/usr/bin/clear > /dev/tty1
-exec /usr/bin/greetd
-" > /etc/sv/greetd/run'
+    sudo bash -c 'printf "#!/bin/sh\nexec 2>&1\nexport TERM=linux\nexport PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nsv check dbus || exit 1\nsv check elogind || exit 1\nsv check seatd || exit 1\n/usr/bin/clear > /dev/tty1\nexec /usr/bin/greetd\n" > /etc/sv/greetd/run'
     sudo chmod +x /etc/sv/greetd/run
 fi
 
@@ -73,10 +64,6 @@ for source_path in "$SCRIPT_DIR/dotconfig/"*; do
     ln -sf "$source_path" "$target"
 done
 
-# Download default wallpaper if missing
-if [ ! -f ~/.config/wallpaper.jpg ]; then
-    curl -L https://raw.githubusercontent.com/zatch-m/tokyo-night-wallpaper/main/tokyo-night-wallpaper.jpg -o ~/.config/wallpaper.jpg || true
-fi
 # 4. Greetd Config
 echo -e "${BLUE}Configuring greetd...${NC}"
 sudo mkdir -p /etc/greetd
@@ -97,29 +84,29 @@ fi
 mkdir -p ~/.npm-global
 npm config set prefix "~/.npm-global"
 
-# 7. Niri Session Wrapper (Refined for seatd and no hardware cursor fallback)
+# 7. Niri Session Wrapper
 echo -e "${BLUE}Creating niri-session wrapper...${NC}"
-sudo bash -c 'printf "#!/bin/bash
-export XDG_SESSION_TYPE=wayland
-export XDG_RUNTIME_DIR=/run/user/\$(id -u)
-export WLR_NO_HARDWARE_CURSORS=1
-export QT_QPA_PLATFORM=wayland
-export GDK_BACKEND=wayland
-export PATH=\$PATH:/usr/local/bin:\$HOME/.npm-global/bin
-
-# Wait for elogind to create runtime dir
-for i in {1..10}; do
-    [ -d \"\$XDG_RUNTIME_DIR\" ] && break
-    sleep 0.5
-done
-
-exec niri --session
-" > /usr/local/bin/niri-session'
+sudo bash -c 'printf "#!/bin/bash\nexport XDG_SESSION_TYPE=wayland\nexport XDG_RUNTIME_DIR=/run/user/\$(id -u)\nexport WLR_NO_HARDWARE_CURSORS=1\nexport QT_QPA_PLATFORM=wayland\nexport GDK_BACKEND=wayland\nexport PATH=\$PATH:/usr/local/bin:\$HOME/.npm-global/bin\n\n# Wait for elogind to create runtime dir\nfor i in {1..10}; do\n    [ -d \"\$XDG_RUNTIME_DIR\" ] && break\n    sleep 0.5\ndone\n\nexec niri --session\n" > /usr/local/bin/niri-session'
 sudo chmod +x /usr/local/bin/niri-session
 
-# 8. Permissions
+# 8. Permissions & Polkit
+echo -e "${BLUE}Configuring permissions and Polkit rules...${NC}"
 sudo usermod -aG video,audio,input,storage,network,wheel,greeter,"$(id -gn)",_seatd "$USER" 2>/dev/null || true
 sudo usermod -aG video,input,tty,greeter,_seatd,_greetd greeter 2>/dev/null || true
+
+# Allow wheel group to shutdown/reboot without password
+sudo mkdir -p /etc/polkit-1/rules.d
+sudo bash -c 'cat <<EOF > /etc/polkit-1/rules.d/10-power-management.rules
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.freedesktop.login1.reboot" ||
+         action.id == "org.freedesktop.login1.reboot-multiple-sessions" ||
+         action.id == "org.freedesktop.login1.power-off" ||
+         action.id == "org.freedesktop.login1.power-off-multiple-sessions") &&
+        subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});
+EOF'
 
 if ! grep -q "XDG_RUNTIME_DIR" ~/.bash_profile 2>/dev/null; then
     echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> ~/.bash_profile
