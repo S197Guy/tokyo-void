@@ -6,11 +6,11 @@ layout {
     center-focused-column "never"
 
     border {
-        off
+        width 0
     }
 
     focus-ring {
-        off
+        width 0
     }
 }
 
@@ -70,6 +70,7 @@ binds {
     XF86MonBrightnessDown { spawn "/usr/bin/brightnessctl" "set" "5%-"; }
 }
 
+# Use dbus-run-session for apps that need it
 spawn-at-startup "/usr/bin/swww-daemon"
 spawn-at-startup "/usr/bin/swww" "img" "/home/neonscar/.config/wallpaper.jpg"
 spawn-at-startup "/usr/bin/quickshell" "/home/neonscar/.config/quickshell/shell.qml"

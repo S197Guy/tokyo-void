@@ -4,16 +4,16 @@ import Quickshell
 
 ShellRoot {
     PanelWindow {
-        anchors {
-            top: true
-            left: true
-            right: true
-        }
+        anchors.top: true
+        anchors.left: true
+        anchors.right: true
         height: 32
 
         Rectangle {
             anchors.fill: parent
             color: "#1a1b26"
+            border.color: "#414868"
+            border.width: 1
 
             RowLayout {
                 anchors.fill: parent
@@ -21,7 +21,6 @@ ShellRoot {
                 anchors.rightMargin: 12
                 spacing: 12
 
-                // Workspaces (Placeholder Icons)
                 RowLayout {
                     spacing: 8
                     Repeater {
@@ -36,19 +35,16 @@ ShellRoot {
 
                 Item { Layout.fillWidth: true }
 
-                // Center Brand
                 Text {
                     text: "tokyo-void"
                     color: "#c0caf5"
                     font.bold: true
                     font.pixelSize: 13
-                    font.family: "JetBrainsMono Nerd Font"
                     Layout.alignment: Qt.AlignHCenter
                 }
 
                 Item { Layout.fillWidth: true }
 
-                // System Info (Simplified Symbols)
                 RowLayout {
                     spacing: 12
                     Text {
@@ -65,18 +61,17 @@ ShellRoot {
                         id: timeText
                         color: "#7dcfff"
                         font.pixelSize: 12
-                        font.family: "JetBrainsMono Nerd Font"
                         
                         Timer {
                             interval: 1000; running: true; repeat: true
                             onTriggered: {
                                 var now = new Date();
-                                timeText.text = " " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                timeText.text = " " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                             }
                         }
                         Component.onCompleted: {
                             var now = new Date();
-                            text = " " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            text = " " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                         }
                     }
                 }
