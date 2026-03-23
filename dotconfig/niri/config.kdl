@@ -1,10 +1,11 @@
 // tokyo-void Niri Configuration
 // Theme: Tokyo Night Storm
 
+prefer-no-csd
+
 layout {
     gaps 8
     center-focused-column "never"
-    prefer-no-csd
 
     border {
         width 2
