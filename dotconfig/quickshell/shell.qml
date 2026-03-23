@@ -5,7 +5,7 @@ import Quickshell
 import Quickshell.Wayland
 
 ShellRoot {
-    VariantsWindow {
+    PanelWindow {
         WlrLayershell.layer: WlrLayershell.Layer.Top
         WlrLayershell.namespace: "quickshell"
         WlrLayershell.edges: WlrLayershell.Edge.Top | WlrLayershell.Edge.Left | WlrLayershell.Edge.Right
