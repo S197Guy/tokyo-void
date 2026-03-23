@@ -4,13 +4,18 @@
 layout {
     gaps 8
     center-focused-column "never"
+    prefer-no-csd
 
     border {
-        width 0
+        width 2
+        active-color "#7aa2f7"
+        inactive-color "#24283b"
     }
 
     focus-ring {
-        width 0
+        width 2
+        active-color "#7aa2f7"
+        inactive-color "#24283b"
     }
 }
 
@@ -70,7 +75,6 @@ binds {
     XF86MonBrightnessDown { spawn "/usr/bin/brightnessctl" "set" "5%-"; }
 }
 
-// Use dbus-run-session for apps that need it
 spawn-at-startup "/usr/bin/swww-daemon"
 spawn-at-startup "/usr/bin/swww" "img" "/home/neonscar/.config/wallpaper.jpg"
 spawn-at-startup "/usr/bin/quickshell" "/home/neonscar/.config/quickshell/shell.qml"

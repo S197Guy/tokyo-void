@@ -4,9 +4,11 @@ import Quickshell
 
 ShellRoot {
     PanelWindow {
-        anchors.top: true
-        anchors.left: true
-        anchors.right: true
+        anchors {
+            top: true
+            left: true
+            right: true
+        }
         height: 32
 
         Rectangle {
@@ -40,6 +42,7 @@ ShellRoot {
                     color: "#c0caf5"
                     font.bold: true
                     font.pixelSize: 13
+                    font.family: "JetBrainsMono Nerd Font"
                     Layout.alignment: Qt.AlignHCenter
                 }
 
@@ -51,16 +54,19 @@ ShellRoot {
                         text: "  CPU"
                         color: "#9ece6a"
                         font.pixelSize: 12
+                        font.family: "JetBrainsMono Nerd Font"
                     }
                     Text {
                         text: "  RAM"
                         color: "#bb9af7"
                         font.pixelSize: 12
+                        font.family: "JetBrainsMono Nerd Font"
                     }
                     Text {
                         id: timeText
                         color: "#7dcfff"
                         font.pixelSize: 12
+                        font.family: "JetBrainsMono Nerd Font"
                         
                         Timer {
                             interval: 1000; running: true; repeat: true
