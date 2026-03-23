@@ -76,6 +76,6 @@ binds {
     XF86MonBrightnessDown { spawn "/usr/bin/brightnessctl" "set" "5%-"; }
 }
 
-spawn-at-startup "/usr/bin/swww-daemon"
-spawn-at-startup "/usr/bin/swww" "img" "/home/neonscar/.config/wallpaper.jpg"
-spawn-at-startup "/usr/bin/quickshell" "/home/neonscar/.config/quickshell/shell.qml"
+spawn-at-startup "sh" "-c" "/usr/bin/swww-daemon"
+spawn-at-startup "sh" "-c" "sleep 1 && /usr/bin/swww img ~/.config/wallpaper.jpg"
+spawn-at-startup "sh" "-c" "sleep 1 && /usr/bin/quickshell"
