@@ -28,7 +28,7 @@ PKGS=(niri greetd tuigreet quickshell neovim ranger fish-shell alacritty starshi
 
 echo -e "${BLUE}Installing packages...${NC}"
 sudo xbps-install -Syu || true
-sudo xbps-install -y "${PKGS[@]}"
+sudo xbps-install -yu "${PKGS[@]}" || true
 
 # 2. Enable Services
 SERVICES=(dbus elogind polkitd tlp greetd seatd)
