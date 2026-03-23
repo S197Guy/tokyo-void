@@ -126,4 +126,8 @@ if ! grep -q "XDG_RUNTIME_DIR" ~/.bash_profile 2>/dev/null; then
     echo "export XDG_SESSION_TYPE=wayland" >> ~/.bash_profile
 fi
 
+# Update font cache
+echo -e "${BLUE}Updating font cache...${NC}"
+sudo fc-cache -fv
+
 echo -e "${GREEN}Bootstrap complete! Reboot now.${NC}"

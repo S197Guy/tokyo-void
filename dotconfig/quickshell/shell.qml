@@ -24,7 +24,8 @@ ShellRoot {
 
         Process {
             id: sysInfo
-            command: ["sh", "-c", "cat /sys/class/power_supply/BAT0/capacity 2>/dev/null || echo 0; cat /sys/class/power_supply/BAT0/status 2>/dev/null || echo Unknown; top -bn1 | grep \"Cpu(s)\" | awk \"{print $2}\"; free -g | awk \"/Mem:/ {print $3}\""]
+            // More robust command: auto-detect BAT0/BAT1, use simpler awk
+            command: ["sh", "-c", "BP=$(ls -d /sys/class/power_supply/BAT* | head -1); [ -d \"$BP\" ] && cat \"$BP/capacity\" || echo 0; [ -d \"$BP\" ] && cat \"$BP/status\" || echo Unknown; top -bn1 | awk \"/Cpu\\(s\\)/ {print $2}\"; free -h | awk \"/Mem:/ {print $3}\""]
             stdout: StdioCollector {
                 onStreamFinished: {
                     var lines = text.trim().split("\n");
@@ -32,7 +33,7 @@ ShellRoot {
                         battery = lines[0] + "%";
                         status = lines[1];
                         cpu = lines[2] + "%";
-                        ram = lines[3] + "G";
+                        ram = lines[3];
                     }
                 }
             }
