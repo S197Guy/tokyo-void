@@ -5,13 +5,12 @@ import Quickshell
 import Quickshell.Wayland
 
 ShellRoot {
-    Window {
+    VariantsWindow {
         WlrLayershell.layer: WlrLayershell.Layer.Top
         WlrLayershell.namespace: "quickshell"
-        WlrLayershell.anchor: WlrLayershell.Edge.Top | WlrLayershell.Edge.Left | WlrLayershell.Edge.Right
+        WlrLayershell.edges: WlrLayershell.Edge.Top | WlrLayershell.Edge.Left | WlrLayershell.Edge.Right
         
         height: 32
-        color: "transparent"
 
         Rectangle {
             anchors.fill: parent
@@ -35,6 +34,7 @@ ShellRoot {
                 Item { Layout.fillWidth: true }
                 
                 Text {
+                    id: timeText
                     property var time: new Date()
                     text: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     color: "#c0caf5"
@@ -42,7 +42,7 @@ ShellRoot {
                     
                     Timer {
                         interval: 1000; running: true; repeat: true
-                        onTriggered: parent.time = new Date()
+                        onTriggered: timeText.time = new Date()
                     }
                 }
             }
