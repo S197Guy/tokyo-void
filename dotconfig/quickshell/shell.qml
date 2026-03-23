@@ -1,15 +1,14 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Wayland
 
 ShellRoot {
     PanelWindow {
-        WlrLayershell.layer: WlrLayershell.Layer.Top
-        WlrLayershell.namespace: "quickshell"
-        WlrLayershell.edges: WlrLayershell.Edge.Top | WlrLayershell.Edge.Left | WlrLayershell.Edge.Right
-        
+        anchors {
+            top: true
+            left: true
+            right: true
+        }
         height: 32
 
         Rectangle {
@@ -28,6 +27,7 @@ ShellRoot {
                     text: "tokyo-void"
                     color: "#7aa2f7"
                     font.bold: true
+                    font.pixelSize: 14
                     Layout.alignment: Qt.AlignVCenter
                 }
 
@@ -35,14 +35,21 @@ ShellRoot {
                 
                 Text {
                     id: timeText
-                    property var time: new Date()
-                    text: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     color: "#c0caf5"
+                    font.pixelSize: 14
                     Layout.alignment: Qt.AlignVCenter
                     
                     Timer {
                         interval: 1000; running: true; repeat: true
-                        onTriggered: timeText.time = new Date()
+                        onTriggered: {
+                            var now = new Date();
+                            timeText.text = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        }
+                    }
+                    
+                    Component.onCompleted: {
+                        var now = new Date();
+                        text = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     }
                 }
             }
