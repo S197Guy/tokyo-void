@@ -151,6 +151,23 @@ mkdir -p ~/.npm-global
 npm config set prefix "~/.npm-global"
 
 
+# 8. Niri Session Wrapper
+echo -e "${BLUE}Creating niri-session wrapper...${NC}"
+mkdir -p ~/.local/bin
+cat <<EOF > ~/.local/bin/niri-session
+#!/bin/bash
+export XDG_SESSION_TYPE=wayland
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+if [ ! -d "$XDG_RUNTIME_DIR" ]; then
+    sudo mkdir -p "$XDG_RUNTIME_DIR"
+    sudo chown $USER:$USER "$XDG_RUNTIME_DIR"
+    sudo chmod 700 "$XDG_RUNTIME_DIR"
+fi
+export PATH=$PATH:$HOME/.local/bin:$HOME/.npm-global/bin
+exec dbus-run-session niri
+EOF
+chmod +x ~/.local/bin/niri-session
+
 # 7. Void-specific Permissions & Groups
 echo -e "${BLUE}Configuring user groups and permissions...${NC}"
 # Add current user to essential groups

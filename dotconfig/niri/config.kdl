@@ -40,8 +40,8 @@ output "eDP-1" {
 binds {
     Mod+Shift+SLASH { show-hotkey-overlay; }
 
-    Mod+Return { spawn "alacritty"; }
-    Mod+Space { spawn "fuzzel"; }
+    Mod+Return { spawn "/usr/bin/alacritty"; }
+    Mod+Space { spawn "/usr/bin/fuzzel"; }
     
     Mod+Q { close-window; }
     
@@ -68,8 +68,8 @@ binds {
     Mod+Shift+E { quit; }
     
     // Laptop Controls
-    XF86MonBrightnessUp { spawn "brightnessctl" "set" "5%+"; }
-    XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
+    XF86MonBrightnessUp { spawn "/usr/bin/brightnessctl" "set" "5%+"; }
+    XF86MonBrightnessDown { spawn "/usr/bin/brightnessctl" "set" "5%-"; }
 }
 
-spawn-at-startup "quickshell" "~/.config/quickshell/shell.qml"
+spawn-at-startup "/usr/bin/quickshell" "~/.config/quickshell/shell.qml"
