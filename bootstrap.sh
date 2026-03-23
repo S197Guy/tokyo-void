@@ -11,6 +11,10 @@ NC="\033[0m"
 
 echo -e "${BLUE}Starting tokyo-void bootstrap...${NC}"
 
+# Ensure greeter user exists
+if ! id "greeter" &>/dev/null; then
+    sudo useradd -M -G video,input,tty -s /sbin/nologin greeter
+fi
 # 1. Install Core Packages
 PKGS=(
     niri
