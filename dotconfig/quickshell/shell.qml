@@ -17,7 +17,6 @@ ShellRoot {
         property string ram: "0G"
         property string status: "Unknown"
 
-        // Centralized System Info Update
         Timer {
             interval: 5000; running: true; repeat: true; triggeredOnStart: true
             onTriggered: sysInfo.running = true
@@ -51,26 +50,22 @@ ShellRoot {
                 anchors.rightMargin: 12
                 spacing: 16
 
-                // 1. Launcher Button
                 Text {
                     text: "\uf306"
                     color: "#7aa2f7"
                     font.pixelSize: 18
                     font.family: "JetBrainsMono Nerd Font"
                     Layout.alignment: Qt.AlignVCenter
-                    
                     MouseArea {
                         anchors.fill: parent
                         onClicked: fuzzelLauncher.startDetached()
                     }
-                    
                     Process {
                         id: fuzzelLauncher
                         command: ["/usr/bin/fuzzel"]
                     }
                 }
 
-                // 2. Workspaces
                 RowLayout {
                     spacing: 8
                     Repeater {
@@ -86,7 +81,6 @@ ShellRoot {
 
                 Item { Layout.fillWidth: true }
 
-                // 3. Brand
                 Text {
                     text: "tokyo-void"
                     color: "#c0caf5"
@@ -98,67 +92,53 @@ ShellRoot {
 
                 Item { Layout.fillWidth: true }
 
-                // 4. Status Info
                 RowLayout {
                     spacing: 16
-                    
-                    // CPU
                     Text {
                         text: "\uf2db " + cpu
                         color: "#9ece6a"
                         font.pixelSize: 12
                         font.family: "JetBrainsMono Nerd Font"
                     }
-
-                    // RAM
                     Text {
                         text: "\uefc5 " + ram
                         color: "#bb9af7"
                         font.pixelSize: 12
                         font.family: "JetBrainsMono Nerd Font"
                     }
-
-                    // Battery
                     Text {
                         text: (status === "Charging" ? "\uf0e7 " : "\uf240 ") + battery
                         color: parseInt(battery) < 20 ? "#f7768e" : "#9ece6a"
                         font.pixelSize: 12
                         font.family: "JetBrainsMono Nerd Font"
                     }
-
-                    // Time
                     Text {
                         id: timeText
                         color: "#7dcfff"
                         font.pixelSize: 12
                         font.family: "JetBrainsMono Nerd Font"
-                        
                         Timer {
                             interval: 1000; running: true; repeat: true
                             onTriggered: {
                                 var now = new Date();
-                                timeText.text = "\uf017 " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }).replace(/\"/g, \"\");
+                                timeText.text = "\uf017 " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                             }
                         }
                         Component.onCompleted: {
                             var now = new Date();
-                            text = "\uf017 " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }).replace(/\"/g, \"\");
+                            text = "\uf017 " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                         }
                     }
-
-                    // 5. Power Button
                     Text {
                         text: "\uf011"
                         color: "#f7768e"
                         font.pixelSize: 16
                         font.family: "JetBrainsMono Nerd Font"
                         Layout.alignment: Qt.AlignVCenter
-                        
                         MouseArea {
                             anchors.fill: parent
                             onClicked: powerMenu.startDetached()
                         }
-                        
                         Process {
                             id: powerMenu
                             command: ["sh", "-c", "echo -e \"Logout\nReboot\nShutdown\" | fuzzel --dmenu --prompt \"Power: \" | xargs -I{} sh -c \"case {} in Logout) niri msg action quit ;; Reboot) sudo reboot ;; Shutdown) sudo poweroff ;; esac\""]
