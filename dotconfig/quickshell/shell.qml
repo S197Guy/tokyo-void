@@ -5,9 +5,11 @@ import Quickshell.Io
 
 ShellRoot {
     PanelWindow {
-        anchors.top: true
-        anchors.left: true
-        anchors.right: true
+        anchors {
+            top: true
+            left: true
+            right: true
+        }
         height: 32
 
         property string batteryPath: "/sys/class/power_supply/BAT0"
@@ -17,8 +19,8 @@ ShellRoot {
         Timer {
             interval: 30000; running: true; repeat: true; triggeredOnStart: true
             onTriggered: {
-                readCapacity.start()
-                readStatus.start()
+                readCapacity.running = true
+                readStatus.running = true
             }
         }
 
@@ -26,7 +28,7 @@ ShellRoot {
             id: readCapacity
             command: ["cat", batteryPath + "/capacity"]
             stdout: StdioCollector {
-                onLineRead: (line) => percentage = line.trim()
+                onStreamFinished: percentage = text.trim()
             }
         }
 
@@ -34,7 +36,7 @@ ShellRoot {
             id: readStatus
             command: ["cat", batteryPath + "/status"]
             stdout: StdioCollector {
-                onLineRead: (line) => status = line.trim()
+                onStreamFinished: status = text.trim()
             }
         }
 
@@ -59,14 +61,11 @@ ShellRoot {
                     
                     MouseArea {
                         anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            fuzzelProcess.start()
-                        }
+                        onClicked: fuzzelLauncher.startDetached()
                     }
                     
                     Process {
-                        id: fuzzelProcess
+                        id: fuzzelLauncher
                         command: ["/usr/bin/fuzzel"]
                     }
                 }
