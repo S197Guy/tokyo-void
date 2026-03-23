@@ -1,28 +1,15 @@
-
 // tokyo-void Niri Configuration
 // Theme: Tokyo Night Storm
 
 layout {
-    border {
-        off
-    }
-    focus-ring {
-        off
-    }
-    shadow {
-        off
-    }
     gaps 8
     center-focused-column "never"
 
-    focus-ring {
-        width 2
-        active-color "#7aa2f7"
-        inactive-color "#414868"
-        urgent-color "#bb9af7"
+    border {
+        off
     }
 
-    border {
+    focus-ring {
         off
     }
 }
@@ -83,4 +70,6 @@ binds {
     XF86MonBrightnessDown { spawn "/usr/bin/brightnessctl" "set" "5%-"; }
 }
 
+spawn-at-startup "/usr/bin/swww-daemon"
+spawn-at-startup "/usr/bin/swww" "img" "/home/neonscar/.config/wallpaper.jpg"
 spawn-at-startup "/usr/bin/quickshell" "/home/neonscar/.config/quickshell/shell.qml"
