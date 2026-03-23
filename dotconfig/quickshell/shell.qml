@@ -137,12 +137,12 @@ ShellRoot {
                             interval: 1000; running: true; repeat: true
                             onTriggered: {
                                 var now = new Date();
-                                timeText.text = "\uf017 " + now.toLocaleTimeString([], { hour: \"2-digit\", minute: \"2-digit\" });
+                                timeText.text = "\uf017 " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }).replace(/\"/g, \"\");
                             }
                         }
                         Component.onCompleted: {
                             var now = new Date();
-                            text = "\uf017 " + now.toLocaleTimeString([], { hour: \"2-digit\", minute: \"2-digit\" });
+                            text = "\uf017 " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }).replace(/\"/g, \"\");
                         }
                     }
 
