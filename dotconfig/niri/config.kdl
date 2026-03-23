@@ -3,6 +3,15 @@
 // Theme: Tokyo Night Storm
 
 layout {
+    border {
+        off
+    }
+    focus-ring {
+        off
+    }
+    shadow {
+        off
+    }
     gaps 8
     center-focused-column "never"
 

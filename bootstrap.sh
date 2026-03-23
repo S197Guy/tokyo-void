@@ -24,7 +24,7 @@ if ! id "greeter" &>/dev/null; then
 fi
 
 # 1. Install Core Packages (Adding seatd and vulkan drivers)
-PKGS=(niri greetd tuigreet quickshell neovim ranger fish-shell alacritty starship tlp brightnessctl elogind polkit dbus mesa-dri seatd mesa-vulkan-intel mesa-vulkan-radeon podman crun conmon slirp4netns fuse-overlayfs podman-compose rust go nodejs-lts git curl wget fuzzel eza swaybg swayidle swaylock pipewire wireplumber xdg-desktop-portal-gtk xdg-desktop-portal-wlr noto-fonts-ttf font-awesome)
+PKGS=(niri greetd tuigreet quickshell neovim ranger fish-shell alacritty starship tlp brightnessctl elogind polkit dbus mesa-dri seatd mesa-vulkan-intel mesa-vulkan-radeon podman crun conmon slirp4netns fuse-overlayfs podman-compose rust go nodejs-lts git curl wget fuzzel eza swww swayidle swaylock pipewire wireplumber xdg-desktop-portal-gtk xdg-desktop-portal-wlr noto-fonts-ttf font-awesome-otf nerd-fonts-symbols-ttf font-jetbrains-mono-otf)
 
 echo -e "${BLUE}Installing packages...${NC}"
 sudo xbps-install -Syu || true
@@ -73,6 +73,10 @@ for source_path in "$SCRIPT_DIR/dotconfig/"*; do
     ln -sf "$source_path" "$target"
 done
 
+# Download default wallpaper if missing
+if [ ! -f ~/.config/wallpaper.jpg ]; then
+    curl -L https://raw.githubusercontent.com/zatch-m/tokyo-night-wallpaper/main/tokyo-night-wallpaper.jpg -o ~/.config/wallpaper.jpg || true
+fi
 # 4. Greetd Config
 echo -e "${BLUE}Configuring greetd...${NC}"
 sudo mkdir -p /etc/greetd
