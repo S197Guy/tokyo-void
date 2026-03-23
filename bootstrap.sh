@@ -9,6 +9,13 @@ GREEN="[0;32m"
 RED="[0;31m"
 NC="[0m"
 
+# Ensure NOT run as root
+if [ "$(id -u)" -eq 0 ]; then
+    echo -e "${RED}Error: Do NOT run this script with sudo.${NC}"
+    echo "It will ask for sudo when needed."
+    exit 1
+fi
+
 echo -e "${BLUE}Starting tokyo-void bootstrap...${NC}"
 
 # Ensure greeter user exists
@@ -16,25 +23,26 @@ if ! id "greeter" &>/dev/null; then
     sudo useradd -M -G video,input,tty -s /sbin/nologin greeter
 fi
 
-# 1. Install Core Packages
-PKGS=(niri greetd tuigreet quickshell neovim ranger fish-shell alacritty starship tlp brightnessctl elogind polkit dbus mesa-dri podman crun conmon slirp4netns fuse-overlayfs podman-compose rust go nodejs-lts git curl wget fuzzel eza swaybg swayidle swaylock pipewire wireplumber xdg-desktop-portal-gtk xdg-desktop-portal-wlr)
+# 1. Install Core Packages (Adding seatd and vulkan drivers)
+PKGS=(niri greetd tuigreet quickshell neovim ranger fish-shell alacritty starship tlp brightnessctl elogind polkit dbus mesa-dri seatd mesa-vulkan-intel mesa-vulkan-radeon podman crun conmon slirp4netns fuse-overlayfs podman-compose rust go nodejs-lts git curl wget fuzzel eza swaybg swayidle swaylock pipewire wireplumber xdg-desktop-portal-gtk xdg-desktop-portal-wlr noto-fonts-ttf font-awesome)
 
 echo -e "${BLUE}Installing packages...${NC}"
 sudo xbps-install -Syu || true
 sudo xbps-install -y "${PKGS[@]}"
 
 # 2. Enable Services
-SERVICES=(dbus elogind polkitd tlp greetd)
+SERVICES=(dbus elogind polkitd tlp greetd seatd)
 
 # Create greetd runit service
 if [ ! -d "/etc/sv/greetd" ]; then
-    sudo mkdir -p /etc/sv/greetd
+    sudo mkdir -p "/etc/sv/greetd"
     sudo bash -c 'printf "#!/bin/sh
 exec 2>&1
 export TERM=linux
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 sv check dbus || exit 1
 sv check elogind || exit 1
+sv check seatd || exit 1
 /usr/bin/clear > /dev/tty1
 exec /usr/bin/greetd
 " > /etc/sv/greetd/run'
@@ -85,25 +93,29 @@ fi
 mkdir -p ~/.npm-global
 npm config set prefix "~/.npm-global"
 
-# 7. Niri Session Wrapper
+# 7. Niri Session Wrapper (Refined for seatd and no hardware cursor fallback)
 echo -e "${BLUE}Creating niri-session wrapper...${NC}"
 sudo bash -c 'printf "#!/bin/bash
 export XDG_SESSION_TYPE=wayland
 export XDG_RUNTIME_DIR=/run/user/\$(id -u)
-if [ ! -d "\$XDG_RUNTIME_DIR" ]; then
-    sudo mkdir -p "\$XDG_RUNTIME_DIR"
-    sudo chown \$USER:\$USER "\$XDG_RUNTIME_DIR"
-    sudo chmod 700 "\$XDG_RUNTIME_DIR"
-fi
+export WLR_NO_HARDWARE_CURSORS=1
+export QT_QPA_PLATFORM=wayland
+export GDK_BACKEND=wayland
 export PATH=\$PATH:/usr/local/bin:\$HOME/.npm-global/bin
-exec dbus-run-session niri
+
+# Wait for elogind to create runtime dir
+for i in {1..10}; do
+    [ -d \"\$XDG_RUNTIME_DIR\" ] && break
+    sleep 0.5
+done
+
+exec niri --session
 " > /usr/local/bin/niri-session'
 sudo chmod +x /usr/local/bin/niri-session
 
 # 8. Permissions
-sudo usermod -aG video,audio,input,storage,network,wheel "$USER" 2>/dev/null || true
-sudo usermod -aG video,input,tty greeter 2>/dev/null || true
-sudo usermod -aG _greetd greeter 2>/dev/null || true
+sudo usermod -aG video,audio,input,storage,network,wheel,greeter,"$(id -gn)",_seatd "$USER" 2>/dev/null || true
+sudo usermod -aG video,input,tty,greeter,_seatd,_greetd greeter 2>/dev/null || true
 
 if ! grep -q "XDG_RUNTIME_DIR" ~/.bash_profile 2>/dev/null; then
     echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> ~/.bash_profile
